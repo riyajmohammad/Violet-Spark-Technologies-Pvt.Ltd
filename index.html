@@ -1,0 +1,1127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f6fb">
+  <link rel="icon" type="image/jpeg" href="company-logo.jpeg">
+  <title>VST | Business Desk</title>
+  <style>
+    :root {
+      --ink: #211b32;
+      --muted: #827d8d;
+      --purple: #5423a5;
+      --purple-dark: #32106f;
+      --purple-soft: #f1ebfb;
+      --teal: #087f8c;
+      --teal-soft: #e5f7f7;
+      --pink: #bd3c82;
+      --pink-soft: #fff0f7;
+      --blue: #3468c0;
+      --blue-soft: #edf3ff;
+      --line: #ece9f1;
+      --canvas: #f8f7fa;
+      --white: #fff;
+      --green: #16845b;
+      --green-soft: #e7f6ef;
+      --amber: #a56708;
+      --amber-soft: #fff4db;
+      --red: #c13d4c;
+      --red-soft: #fff0f0;
+      --shadow: 0 12px 36px rgba(35, 21, 61, .07);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { 
+      box-sizing: border-box; 
+     }
+    body { margin: 0; background: linear-gradient(135deg, #f7f6fb 0%, #f5f9ff 55%, #fff8fc 100%); color: var(--ink); font-size: 15px; }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    .app { min-height: 100vh; display: flex; }
+    .app.is-locked { display: none; }
+    .login-screen { min-height: 100vh; display: grid; place-items: center; overflow: hidden; position: relative; padding: 30px 18px; background: radial-gradient(ellipse at 16% 20%, rgba(255,255,255,.95), transparent 30%), radial-gradient(ellipse at 85% 80%, rgba(206,190,255,.55), transparent 32%), linear-gradient(135deg, #ede6ff, #f6f3ff 46%, #e5f4ff); }
+    .login-screen[hidden] { display: none; }
+    .login-screen:before, .login-screen:after { content: ""; position: absolute; border-radius: 50%; pointer-events: none; }
+    .login-screen:before { width: 360px; height: 360px; top: -180px; right: -110px; background: linear-gradient(145deg, rgba(116,65,198,.2), rgba(255,255,255,.08)); }
+    .login-screen:after { width: 260px; height: 260px; bottom: -130px; left: -70px; background: linear-gradient(145deg, rgba(42,167,193,.17), rgba(255,255,255,.08)); }
+    .login-card { position: relative; z-index: 1; width: min(430px, 100%); padding: 30px; border: 1px solid rgba(255,255,255,.85); border-radius: 26px; background: rgba(255,255,255,.82); box-shadow: 0 28px 80px rgba(52,26,104,.18), inset 0 1px 0 #fff; backdrop-filter: blur(16px); }
+    .login-brand { display: flex; justify-content: center; align-items: center; gap: 10px; color: var(--purple-dark); font-size: 12px; font-weight: 850; letter-spacing: .08em; }
+    .login-brand img { width: 40px; height: 40px; object-fit: contain; border-radius: 11px; }
+    .mascot-stage { height: 205px; display: grid; place-items: center; position: relative; margin: 9px 0 2px; perspective: 600px; }
+    .mascot-glow { position: absolute; width: 150px; height: 40px; bottom: 17px; border-radius: 50%; background: rgba(84,35,165,.16); filter: blur(9px); }
+    .mascot { width: 144px; height: 164px; position: relative; transform-style: preserve-3d; animation: mascot-float 3.2s ease-in-out infinite; }
+    .mascot-antenna { position: absolute; width: 5px; height: 20px; top: 0; left: 69px; border-radius: 8px; background: linear-gradient(90deg,#6940ae,#b797ee); }
+    .mascot-antenna:before { content: ""; position: absolute; width: 12px; height: 12px; top: -8px; left: -4px; border-radius: 50%; background: #ffca65; box-shadow: 0 0 13px rgba(255,191,69,.7); }
+    .mascot-ear { position: absolute; width: 15px; height: 31px; top: 48px; border-radius: 8px; background: linear-gradient(135deg,#b795ec,#7545bd); box-shadow: inset 2px 2px 3px rgba(255,255,255,.6); }
+    .mascot-ear.left { left: 0; } .mascot-ear.right { right: 0; }
+    .mascot-head { position: absolute; width: 124px; height: 91px; left: 10px; top: 24px; border: 3px solid #e8ddfb; border-radius: 35px 35px 30px 30px; background: linear-gradient(145deg,#fff 5%,#f6f0ff 55%,#d9c7f7); box-shadow: 9px 12px 18px rgba(62,32,113,.2), inset 4px 4px 8px #fff, inset -5px -6px 9px rgba(112,73,177,.14); transform: rotateX(4deg); }
+    .mascot-face { position: absolute; inset: 17px 13px 15px; display: flex; justify-content: center; align-items: center; gap: 24px; border-radius: 23px; background: linear-gradient(155deg,#362459,#211738); box-shadow: inset 0 3px 8px rgba(0,0,0,.55), 0 0 0 2px rgba(167,139,215,.2); }
+    .mascot-eye { width: 11px; height: 16px; border-radius: 50%; background: #8af1ff; box-shadow: 0 0 12px #62e7ff; animation: mascot-blink 5s infinite; }
+    .mascot-smile { position: absolute; width: 19px; height: 8px; bottom: 7px; left: 39px; border-bottom: 2px solid #d8aaff; border-radius: 50%; }
+    .mascot-body { position: absolute; width: 91px; height: 48px; left: 27px; bottom: 0; border: 3px solid #eee7fa; border-radius: 25px 25px 17px 17px; background: linear-gradient(145deg,#fff,#e3d6fa 72%,#c8b1ef); box-shadow: 6px 9px 14px rgba(62,32,113,.17), inset 3px 3px 6px #fff; }
+    .mascot-badge { position: absolute; width: 25px; height: 25px; top: 8px; left: 30px; display: grid; place-items: center; border-radius: 50%; background: linear-gradient(145deg,#fff2bf,#ffbd51); color: #71439e; font-size: 12px; box-shadow: 0 3px 6px rgba(98,59,145,.2); }
+    @keyframes mascot-float { 0%,100% { transform: translateY(0) rotateY(-5deg); } 50% { transform: translateY(-8px) rotateY(5deg); } }
+    @keyframes mascot-blink { 0%,46%,50%,100% { transform: scaleY(1); } 48% { transform: scaleY(.12); } }
+    .login-heading { margin: 0; text-align: center; color: var(--purple-dark); font-size: 25px; letter-spacing: -.04em; }
+    .login-subtitle { margin: 8px 0 22px; text-align: center; color: var(--muted); font-size: 13px; line-height: 1.5; }
+    .login-form { display: grid; gap: 14px; }
+    .login-field { display: grid; gap: 7px; }
+    .login-field label { color: #514564; font-size: 12px; font-weight: 750; }
+    .login-field input { width: 100%; border: 1px solid #e4deef; border-radius: 11px; padding: 13px 14px; outline: 0; background: rgba(255,255,255,.9); color: var(--ink); font-size: 14px; transition: border-color .2s, box-shadow .2s; }
+    .login-field input:focus { border-color: #9d7acc; box-shadow: 0 0 0 4px rgba(84,35,165,.1); }
+    .login-submit { width: 100%; margin-top: 3px; border: 0; border-radius: 11px; padding: 13px; color: #fff; font-weight: 750; background: linear-gradient(120deg,#5423a5,#8051ce); box-shadow: 0 8px 18px rgba(84,35,165,.25); }
+    .login-submit:hover { background: linear-gradient(120deg,#432080,#6d3bb8); transform: translateY(-1px); }
+    .login-actions { display: flex; justify-content: center; margin-top: 13px; }
+    .listen-button { border: 0; padding: 7px 12px; border-radius: 20px; color: var(--purple); background: var(--purple-soft); font-size: 12px; font-weight: 700; }
+    .login-status { min-height: 18px; margin: 10px 0 0; text-align: center; color: var(--muted); font-size: 11px; }
+    .login-status.error { color: var(--red); }
+    .login-disclaimer { margin: 15px 0 0; color: #8b8495; text-align: center; font-size: 10px; line-height: 1.5; }
+    @media (prefers-reduced-motion: reduce) { .mascot { animation: none; } .mascot-eye { animation: none; } }
+    .sidebar { width: 246px; background: #fff; border-right: 1px solid var(--line); padding: 22px 15px; display: flex; flex-direction: column; flex-shrink: 0; }
+    .brand { display: flex; align-items: center; gap: 11px; padding: 0 10px 23px; border-bottom: 1px solid var(--line); }
+    .brand img { width: 47px; height: 47px; object-fit: contain; border-radius: 11px; background: #fff; }
+    .brand strong { display: block; font-size: 13px; letter-spacing: .035em; }
+    .brand span { color: var(--muted); font-size: 10px; margin-top: 3px; display: block; }
+    .nav-label { color: #aaa5b2; font-weight: 700; font-size: 10px; letter-spacing: .12em; padding: 25px 12px 9px; }
+    .nav { display: grid; gap: 4px; }
+    .nav button { border: 0; background: transparent; border-radius: 9px; color: #554f63; padding: 12px; text-align: left; display: flex; gap: 12px; align-items: center; font-weight: 600; font-size: 14px; }
+    .nav button:hover { background: var(--blue-soft); color: var(--blue); }
+    .nav button.active { color: var(--purple); background: linear-gradient(110deg, var(--purple-soft), var(--blue-soft)); font-weight: 750; }
+    .nav-icon { width: 19px; text-align: center; font-size: 18px; }
+    .sidebar-bottom { margin-top: auto; }
+    .help-card { background: #f7f3fc; border-radius: 12px; padding: 14px; margin: 20px 4px 5px; }
+    .help-card strong { display: block; font-size: 12px; margin-bottom: 5px; }
+    .help-card span { display: block; color: var(--muted); line-height: 1.5; font-size: 11px; }
+    .main { min-width: 0; flex: 1; }
+    .topbar { height: 72px; display: flex; justify-content: space-between; align-items: center; padding: 0 34px; background: rgba(255,255,255,.88); border-bottom: 1px solid var(--line); }
+    .crumb { color: var(--muted); font-size: 14px; }
+    .top-actions { display: flex; align-items: center; gap: 10px; }
+    .date-pill { color: #514564; font-size: 13px; background: var(--blue-soft); padding: 9px 12px; border-radius: 8px; }
+    .profile { display: flex; align-items: center; gap: 9px; border-left: 1px solid var(--line); padding-left: 16px; margin-left: 5px; }
+    .avatar { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; background: var(--purple-soft); color: var(--purple); font-weight: 800; font-size: 12px; }
+    .profile b { display: block; font-size: 14px; }
+    .profile small { color: var(--muted); font-size: 12px; }
+    .content { max-width: 1480px; padding: 30px 34px 50px; margin: auto; }
+    .page-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; margin-bottom: 24px; }
+    h1 { margin: 0; font-size: 25px; letter-spacing: -.035em; }
+    .subtitle { color: var(--muted); margin-top: 7px; font-size: 15px; }
+    .button { border: 1px solid var(--line); background: #fff; color: #514b5d; border-radius: 8px; padding: 11px 15px; font-weight: 700; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; justify-content: center; }
+    .button:hover { border-color: #cfc2e5; color: var(--purple); }
+    .button.primary { color: #fff; background: linear-gradient(120deg, var(--purple), #7441c6); border-color: var(--purple); box-shadow: 0 5px 14px rgba(84,35,165,.22); }
+    .button.primary:hover { background: var(--purple-dark); }
+    .button.small { padding: 8px 11px; font-size: 12px; }
+    .button.danger { color: var(--red); }
+    .button:disabled { opacity: .5; cursor: not-allowed; }
+    .metrics { display: grid; grid-template-columns: repeat(4,1fr); gap: 15px; margin-bottom: 20px; }
+    .metric, .panel { background: var(--white); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 2px 10px rgba(35,21,61,.02); }
+    .metric { padding: 18px 19px; }
+    .metric-top { display: flex; align-items: center; justify-content: space-between; }
+    .metric-label { color: var(--muted); font-size: 13px; font-weight: 700; }
+    .metric-icon { width: 36px; height: 36px; display: grid; place-items: center; background: var(--purple-soft); color: var(--purple); border-radius: 9px; font-size: 17px; }
+    .metric-value { font-size: 24px; font-weight: 750; margin-top: 14px; letter-spacing: -.04em; }
+    .metric-note { color: var(--muted); font-size: 12px; margin-top: 5px; }
+    .dashboard-grid { display: grid; grid-template-columns: 1.55fr 1fr; gap: 16px; }
+    .panel { padding: 20px; }
+    .panel-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 16px; }
+    .panel-header h2 { font-size: 14px; margin: 0; }
+    .text-link { border: 0; background: none; color: var(--purple); font-size: 11px; font-weight: 700; padding: 5px; }
+    .table-wrap { overflow-x: auto; }
+    table { border-collapse: collapse; width: 100%; white-space: nowrap; }
+    th { color: #736b81; font-size: 12px; letter-spacing: .06em; font-weight: 750; text-align: left; padding: 11px 10px; border-bottom: 1px solid var(--line); }
+    td { padding: 13px 10px; border-bottom: 1px solid #f1eff4; font-size: 14px; color: #514b5c; }
+    tbody tr:last-child td { border-bottom: 0; }
+    td b { color: var(--ink); font-weight: 650; }
+    .muted { color: var(--muted); }
+    .badge { padding: 5px 8px; border-radius: 20px; font-size: 10px; font-weight: 700; display: inline-block; }
+    .badge.paid, .badge.active { color: var(--green); background: var(--green-soft); }
+    .badge.pending, .badge.draft { color: var(--amber); background: var(--amber-soft); }
+    .badge.overdue, .badge.inactive { color: var(--red); background: var(--red-soft); }
+    .badge.gst { color: var(--purple); background: var(--purple-soft); }
+    .badge.non-gst { color: #666171; background: #f0eff2; }
+    .badge.running { color: var(--teal); background: var(--teal-soft); }
+    .badge.not-running { color: var(--pink); background: var(--pink-soft); }
+    .badge.no { color: #6f667d; background: #f0edf5; }
+    .quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .quick-action { min-height: 92px; border: 1px solid var(--line); border-radius: 10px; background: #fff; text-align: left; padding: 13px; }
+    .quick-action:hover { border-color: #cbb9e8; background: #fcfaff; }
+    .quick-action span { color: var(--purple); display: block; font-size: 17px; margin-bottom: 9px; }
+    .quick-action b { display: block; font-size: 13px; }
+    .quick-action small { display: block; color: var(--muted); margin-top: 4px; font-size: 12px; }
+    .company-strip { margin-top: 16px; padding: 14px 17px; border: 1px solid var(--line); border-radius: 10px; display: flex; align-items: center; justify-content: space-between; gap: 12px; background: #fff; }
+    .company-strip b { font-size: 14px; }
+    .company-strip span { color: var(--muted); font-size: 13px; }
+    .dashboard-metrics { grid-template-columns: repeat(5, 1fr); }
+    .schools-banner { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 22px 24px; margin-bottom: 18px; border-radius: 14px; color: #fff; background: linear-gradient(115deg, #5423a5 0%, #6442c2 48%, #167e9b 100%); box-shadow: 0 12px 24px rgba(84,35,165,.16); }
+    .schools-banner h2 { margin: 0; font-size: 23px; letter-spacing: -.02em; }
+    .schools-banner p { margin: 6px 0 0; color: rgba(255,255,255,.88); font-size: 14px; }
+    .schools-banner .school-count { min-width: 86px; padding: 10px 14px; border: 1px solid rgba(255,255,255,.28); border-radius: 12px; background: rgba(255,255,255,.14); text-align: center; }
+    .school-count b { display: block; font-size: 27px; }
+    .school-count span { font-size: 12px; }
+    .school-register th { color: #4f3971; background: #f3effb; font-size: 12px; }
+    .school-register th:nth-child(3), .school-register th:nth-child(4), .school-register th:nth-child(5) { background: #e9f7f6; }
+    .school-register td { font-size: 14px; vertical-align: top; }
+    .school-register td b { font-size: 15px; color: #392368; }
+    .school-address { white-space: normal; min-width: 180px; max-width: 260px; line-height: 1.5; }
+    .school-fee { color: var(--teal); font-weight: 750; }
+    .toolbar { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 15px; }
+    .search { min-width: 220px; max-width: 340px; width: 100%; position: relative; }
+    .search input { width: 100%; padding: 10px 12px 10px 35px; border-radius: 8px; border: 1px solid var(--line); outline: 0; background: white; }
+    .search input:focus, .field input:focus, .field select:focus, .field textarea:focus { border-color: #9d7acc; box-shadow: 0 0 0 3px rgba(84,35,165,.08); }
+    .search:before { content: "⌕"; position: absolute; left: 13px; top: 7px; color: #8c8796; font-size: 18px; }
+    .toolbar-actions { display: flex; gap: 8px; }
+    .empty { text-align: center; padding: 34px 15px; color: var(--muted); }
+    .empty .empty-icon { font-size: 27px; display: block; margin-bottom: 8px; color: #aaa2b6; }
+    .empty b { display: block; color: #514b5c; margin-bottom: 5px; font-size: 13px; }
+    .row-actions { display: flex; gap: 5px; }
+    .icon-btn { border: 0; background: transparent; color: #797384; padding: 5px; border-radius: 5px; }
+    .icon-btn:hover { background: var(--purple-soft); color: var(--purple); }
+    .settings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 17px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
+    .field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+    .field.full { grid-column: 1/-1; }
+    .field label { font-weight: 700; font-size: 13px; color: #514564; }
+    .field input, .field select, .field textarea { min-width: 0; border: 1px solid #e6e2eb; padding: 11px 12px; border-radius: 7px; color: var(--ink); background: #fff; outline: 0; font-size: 14px; }
+    .field textarea { resize: vertical; min-height: 68px; }
+    .field .hint { color: #766f82; font-size: 12px; }
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(25,17,39,.48); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 10; }
+    .modal-backdrop.open { display: flex; }
+    .modal { background: #fff; width: min(760px, 100%); max-height: min(90vh, 900px); display: flex; flex-direction: column; overflow: hidden; border-radius: 14px; box-shadow: 0 20px 70px rgba(20,10,40,.24); }
+    .modal.wide { width: min(910px, 100%); }
+    .modal-header { padding: 19px 22px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; background: white; z-index: 2; }
+    .modal-header h2 { margin: 0; font-size: 16px; }
+    .close { border: 0; background: #f5f3f7; color: #686273; width: 30px; height: 30px; border-radius: 50%; font-size: 18px; }
+    .modal-body { padding: 20px 22px; overflow-y: auto; min-height: 0; }
+    .modal-footer { display: flex; flex: 0 0 auto; flex-wrap: wrap; justify-content: flex-end; gap: 8px; padding: 14px 22px 20px; border-top: 1px solid var(--line); background: #fff; }
+    .invoice-preview-frame { display: block; width: 100%; height: 72vh; border: 1px solid var(--line); border-radius: 8px; background: #f3f0f7; }
+    .section-title { display: flex; align-items: center; justify-content: space-between; margin: 21px 0 12px; font-size: 12px; font-weight: 750; }
+    .section-title:first-child { margin-top: 0; }
+    .line-items { border: 1px solid var(--line); border-radius: 8px; overflow-x: auto; }
+    .line-items table { min-width: 610px; }
+    .line-items th { background: #faf9fc; }
+    .line-items input { border: 1px solid transparent; border-radius: 5px; padding: 7px 6px; width: 100%; background: transparent; outline: none; font-size: 12px; }
+    .line-items input:focus { border-color: #c6b4e0; background: #fff; }
+    .line-items .desc-input { min-width: 190px; }
+    .line-items .num-input { min-width: 72px; text-align: right; }
+    .line-total { font-size: 12px; font-weight: 700; text-align: right; }
+    .totals { width: min(315px, 100%); margin: 14px 0 0 auto; display: grid; gap: 9px; }
+    .total-row { display: flex; justify-content: space-between; color: #6d6877; font-size: 12px; }
+    .total-row.grand { padding-top: 10px; border-top: 1px solid var(--line); color: var(--purple-dark); font-size: 15px; font-weight: 800; }
+    .toast { position: fixed; right: 23px; bottom: 22px; background: #211b32; color: #fff; padding: 12px 16px; border-radius: 9px; z-index: 20; box-shadow: var(--shadow); transform: translateY(12px); opacity: 0; transition: .2s; pointer-events: none; font-size: 12px; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .note { border-radius: 8px; padding: 11px 12px; background: #f7f4fb; color: #655b75; font-size: 11px; line-height: 1.55; }
+    .tax-toggle { display: flex; gap: 7px; }
+    .tax-toggle button { flex: 1; border: 1px solid var(--line); background: #fff; padding: 10px; color: #6d6877; border-radius: 7px; font-size: 11px; font-weight: 700; }
+    .tax-toggle button.selected { color: var(--purple); border-color: #b69bd9; background: var(--purple-soft); }
+    .status-select { padding: 6px 8px; border: 1px solid var(--line); border-radius: 6px; font-size: 11px; }
+    @media (max-width: 1050px) {
+      .sidebar { width: 215px; }
+      .content { padding: 25px 22px 40px; }
+      .topbar { padding: 0 22px; }
+      .metrics { grid-template-columns: repeat(2,1fr); }
+      .dashboard-metrics { grid-template-columns: repeat(3,1fr); }
+    }
+    @media (max-width: 760px) {
+      .app { display: block; }
+      .sidebar { width: 100%; height: auto; display: block; padding: 11px 12px; border-right: 0; border-bottom: 1px solid var(--line); }
+      .brand { border: 0; padding: 0 6px 8px; }
+      .brand img { width: 35px; height: 35px; }
+      .nav-label, .sidebar-bottom { display: none; }
+      .nav { display: flex; overflow-x: auto; gap: 4px; padding-bottom: 2px; }
+      .nav button { white-space: nowrap; padding: 8px 10px; font-size: 12px; }
+      .nav-icon { display: none; }
+      .topbar { height: 53px; padding: 0 15px; }
+      .profile { display: none; }
+      .content { padding: 22px 14px 35px; }
+      .dashboard-grid { grid-template-columns: 1fr; }
+      .settings-grid { grid-template-columns: 1fr; }
+      .metrics { gap: 9px; }
+      .dashboard-metrics { grid-template-columns: repeat(2,1fr); }
+      .metric { padding: 14px; }
+      .metric-value { font-size: 20px; }
+      .page-heading { margin-bottom: 18px; }
+      h1 { font-size: 21px; }
+      .toolbar { align-items: stretch; flex-direction: column; }
+      .search { max-width: none; }
+      .toolbar-actions { justify-content: flex-end; }
+      .company-strip { align-items: flex-start; flex-direction: column; }
+    }
+    @media (max-width: 420px) {
+      .metrics { grid-template-columns: 1fr 1fr; }
+      .metric-label { font-size: 12px; }
+      .metric-icon { width: 28px; height: 28px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .field.full { grid-column: auto; }
+      .date-pill { font-size: 10px; }
+      .page-heading { align-items: center; }
+      .page-heading .button { padding: 9px; }
+      .schools-banner { padding: 17px; }
+      .schools-banner h2 { font-size: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <section class="login-screen" id="login-screen" aria-label="ERP login">
+    <div class="login-card">
+      <div class="login-brand"><img src="company-logo.jpeg" alt=""><span>VIOLET SPARK · BUSINESS DESK</span></div>
+      <div class="mascot-stage" aria-hidden="true"><div class="mascot-glow"></div><div class="mascot"><div class="mascot-antenna"></div><div class="mascot-ear left"></div><div class="mascot-ear right"></div><div class="mascot-head"><div class="mascot-face"><i class="mascot-eye"></i><i class="mascot-eye"></i><i class="mascot-smile"></i></div></div><div class="mascot-body"><span class="mascot-badge">VS</span></div></div></div>
+      <h1 class="login-heading">Hello, Boss!</h1>
+      <p class="login-subtitle">Your business desk is ready.<br>Confirm your password to continue.</p>
+      <form class="login-form" id="login-form">
+        <div class="login-field"><label for="login-id">Login ID</label><input id="login-id" name="username" autocomplete="username" required autofocus></div>
+        <div class="login-field"><label for="login-password">Password</label><input id="login-password" name="password" type="password" autocomplete="current-password" required></div>
+        <button class="login-submit" type="submit">Unlock Business Desk</button>
+      </form>
+      <div class="login-actions"><button class="listen-button" id="hear-greeting" type="button">🔊&nbsp; Hear greeting</button></div>
+      <p class="login-status" id="login-status" role="status" aria-live="polite"></p>
+      <p class="login-disclaimer">This browser-only sign-in is a convenience screen, not secure account protection. Proper access control requires a server-side login.</p>
+    </div>
+  </section>
+  <div class="app is-locked">
+    <aside class="sidebar">
+      <div class="brand">
+        <img src="company-logo.jpeg" alt="Violet Spark Technologies logo">
+        <div><strong>VIOLET SPARK</strong><span>BUSINESS DESK · ERP</span></div>
+      </div>
+      <div class="nav-label">WORKSPACE</div>
+      <nav class="nav" aria-label="Main navigation">
+        <button class="active" data-page="dashboard"><span class="nav-icon">⌂</span>Overview</button>
+        <button data-page="invoices"><span class="nav-icon">▤</span>Invoices</button>
+        <button data-page="transactions"><span class="nav-icon">↔</span>Transactions</button>
+        <button data-page="schools"><span class="nav-icon">⌂</span>Schools</button>
+        <button data-page="mous"><span class="nav-icon">▧</span>MOU &amp; Contracts</button>
+        <button data-page="employees"><span class="nav-icon">♙</span>Employees</button>
+        <button data-page="settings"><span class="nav-icon">⚙</span>Company settings</button>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="help-card"><strong>Ready for your next bill?</strong><span>Create GST or non-GST invoices and keep every transaction in one place.</span></div>
+      </div>
+    </aside>
+    <main class="main">
+      <header class="topbar">
+        <div class="crumb">Violet Spark <span class="muted">/</span> <b id="crumb-page">Overview</b></div>
+        <div class="top-actions">
+          <div class="date-pill" id="today"></div>
+          <div class="profile"><div class="avatar">VS</div><div><b>Violet Spark</b><small>Administrator</small></div></div>
+        </div>
+      </header>
+      <section class="content" id="content"></section>
+    </main>
+  </div>
+  <div class="modal-backdrop" id="modal-backdrop" role="presentation">
+    <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title"></div>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+  <script>
+    const STORE_KEY = "vst-business-desk-v1";
+    const ERP_LOGIN_ID = "vstofficial786";
+    const ERP_LOGIN_PASSWORD = "khushi82084";
+    const defaults = {
+      company: {
+        name: "VIOLET SPARK TECHNOLOGIES PVT LTD",
+        address: "Gomti Nagar, Lucknow, Uttar Pradesh - 226010",
+        pan: "AAMCV7190D",
+        gstin: "09AAMCV7190D1ZW",
+        email: "info@violetspark.in",
+        phone: "",
+        bank: "", account: "", ifsc: "", upi: ""
+      },
+      invoices: [], transactions: [], mous: [], employees: [], schools: []
+    };
+    let data;
+    try {
+      const stored = JSON.parse(localStorage.getItem(STORE_KEY) || "null");
+      data = stored ? { ...defaults, ...stored, company: { ...defaults.company, ...(stored.company || {}) } } : structuredClone(defaults);
+    } catch (error) {
+      console.error("Could not read saved ERP data.", error);
+      data = structuredClone(defaults);
+    }
+    for (const key of ["invoices", "transactions", "mous", "employees", "schools"]) {
+      if (!Array.isArray(data[key])) data[key] = [];
+    }
+    let page = "dashboard";
+    let invoiceDraftType = "GST";
+    let toastTimer;
+    const content = document.getElementById("content");
+    const money = value => new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 2 }).format(Number(value || 0));
+    function amountInWords(amount) {
+      const ones = ["Zero", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
+      const tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+      const groupWords = value => {
+        const words = [];
+        if (value >= 100) words.push(`${ones[Math.floor(value / 100)]} Hundred`);
+        value %= 100;
+        if (value >= 20) words.push(tens[Math.floor(value / 10)] + (value % 10 ? ` ${ones[value % 10]}` : ""));
+        else if (value > 0) words.push(ones[value]);
+        return words.join(" ");
+      };
+      const paiseTotal = Math.round(Number(amount || 0) * 100);
+      let rupees = Math.floor(paiseTotal / 100);
+      const paise = paiseTotal % 100;
+      const groups = [[10000000, "Crore"], [100000, "Lakh"], [1000, "Thousand"]];
+      const words = [];
+      for (const [size, label] of groups) {
+        const value = Math.floor(rupees / size);
+        if (value) words.push(`${groupWords(value)} ${label}`);
+        rupees %= size;
+      }
+      if (rupees) words.push(groupWords(rupees));
+      return `Rupees ${words.join(" ") || "Zero"}${paise ? ` and ${groupWords(paise)} Paise` : ""} Only`;
+    }
+    const dateText = value => value ? new Date(value + "T00:00:00").toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" }) : "—";
+    const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
+    const todayISO = () => {
+      const now = new Date();
+      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+    };
+    const save = () => {
+      try { localStorage.setItem(STORE_KEY, JSON.stringify(data)); return true; }
+      catch (error) { console.error("Could not save ERP data.", error); notify("Could not save. Check browser storage is available."); return false; }
+    };
+    function notify(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 2800);
+    }
+    function setPage(next) {
+      page = next;
+      document.querySelectorAll(".nav button[data-page]").forEach(button => button.classList.toggle("active", button.dataset.page === next));
+      document.getElementById("crumb-page").textContent = ({ dashboard: "Overview", invoices: "Invoices", transactions: "Transactions", schools: "Schools", mous: "MOU & Contracts", employees: "Employees", settings: "Company settings" })[next];
+      render();
+    }
+    function pageHeading(title, subtitle, action = "") {
+      return `<div class="page-heading"><div><h1>${title}</h1><div class="subtitle">${subtitle}</div></div>${action}</div>`;
+    }
+    function emptyState(icon, title, message, action = "") {
+      return `<div class="empty"><span class="empty-icon">${icon}</span><b>${title}</b><div>${message}</div>${action ? `<div style="margin-top:14px">${action}</div>` : ""}</div>`;
+    }
+    function invoiceBalance(invoice) { return Math.max(0, Number(invoice.total || 0) - Number(invoice.paid || 0)); }
+    function invoiceStatus(invoice) {
+      if (invoice.status === "Draft") return "Draft";
+      if (invoiceBalance(invoice) <= 0) return "Paid";
+      return invoice.dueDate && invoice.dueDate < todayISO() ? "Overdue" : "Pending";
+    }
+    function statusBadge(status) {
+      const cls = status.toLowerCase().replace(/\s/g, "-");
+      return `<span class="badge ${cls}">${escapeHtml(status)}</span>`;
+    }
+    function render() {
+      if (page === "dashboard") renderDashboard();
+      if (page === "invoices") renderInvoices();
+      if (page === "transactions") renderTransactions();
+      if (page === "schools") renderSchools();
+      if (page === "mous") renderMous();
+      if (page === "employees") renderEmployees();
+      if (page === "settings") renderSettings();
+    }
+    function renderDashboard() {
+      const issued = data.invoices.filter(item => item.status !== "Draft");
+      const billed = issued.reduce((sum, item) => sum + Number(item.total || 0), 0);
+      const collected = data.invoices.reduce((sum, item) => sum + Number(item.paid || 0), 0);
+      const outstanding = issued.reduce((sum, item) => sum + invoiceBalance(item), 0);
+      const recent = [...data.invoices].sort((a,b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 5);
+      content.innerHTML = `
+        ${pageHeading(`Good ${greeting()},`, "Here’s your business at a glance.", `<button class="button primary" data-action="new-invoice">＋&nbsp; Create invoice</button>`)}
+        <div class="metrics dashboard-metrics">
+          <div class="metric"><div class="metric-top"><span class="metric-label">Total billed</span><span class="metric-icon">▤</span></div><div class="metric-value">${money(billed)}</div><div class="metric-note">${issued.length} issued invoice${issued.length === 1 ? "" : "s"}</div></div>
+          <div class="metric"><div class="metric-top"><span class="metric-label">Collected</span><span class="metric-icon">↗</span></div><div class="metric-value">${money(collected)}</div><div class="metric-note">Payments recorded</div></div>
+          <div class="metric"><div class="metric-top"><span class="metric-label">Outstanding</span><span class="metric-icon">◷</span></div><div class="metric-value">${money(outstanding)}</div><div class="metric-note">${issued.filter(x => invoiceBalance(x) > 0).length} invoice${issued.filter(x => invoiceBalance(x) > 0).length === 1 ? "" : "s"} awaiting payment</div></div>
+          <div class="metric"><div class="metric-top"><span class="metric-label">Active employees</span><span class="metric-icon">♙</span></div><div class="metric-value">${data.employees.filter(x => x.status === "Active").length}</div><div class="metric-note">${data.mous.length} MOU${data.mous.length === 1 ? "" : "s"} in register</div></div>
+          <div class="metric"><div class="metric-top"><span class="metric-label">Running schools</span><span class="metric-icon">⌂</span></div><div class="metric-value">${data.schools.filter(x => x.status === "Running").length}</div><div class="metric-note">${data.schools.length} school${data.schools.length === 1 ? "" : "s"} in register</div></div>
+        </div>
+        <div class="dashboard-grid">
+          <div class="panel"><div class="panel-header"><h2>Recent invoices</h2><button class="text-link" data-page="invoices">View all invoices →</button></div>
+            ${recent.length ? `<div class="table-wrap"><table><thead><tr><th>INVOICE</th><th>CUSTOMER</th><th>DATE</th><th>AMOUNT</th><th>STATUS</th></tr></thead><tbody>${recent.map(item => `<tr><td><b>${escapeHtml(item.number)}</b></td><td>${escapeHtml(item.customer)}</td><td>${dateText(item.date)}</td><td><b>${money(item.total)}</b></td><td>${statusBadge(invoiceStatus(item))}</td></tr>`).join("")}</tbody></table></div>` : emptyState("▤", "No invoices yet", "Your invoices will appear here once created.", `<button class="button small primary" data-action="new-invoice">Create your first invoice</button>`)}
+          </div>
+          <div class="panel"><div class="panel-header"><h2>Quick actions</h2></div><div class="quick-grid">
+            <button class="quick-action" data-action="new-invoice"><span>＋</span><b>Create an invoice</b><small>GST or non-GST bill</small></button>
+            <button class="quick-action" data-action="new-transaction"><span>↔</span><b>Record transaction</b><small>Track income or expense</small></button>
+            <button class="quick-action" data-action="new-school"><span>⌂</span><b>Add a school</b><small>Track running schools and fees</small></button>
+            <button class="quick-action" data-action="new-mou"><span>▧</span><b>Add an MOU</b><small>Keep agreements organized</small></button>
+            <button class="quick-action" data-action="new-employee"><span>♙</span><b>Add an employee</b><small>Update your team register</small></button>
+          </div></div>
+        </div>
+        <div class="company-strip"><div><b>${escapeHtml(data.company.name)}</b><br><span>${escapeHtml(data.company.address)} · GSTIN ${escapeHtml(data.company.gstin)}</span></div><button class="button small" data-page="settings">Company settings</button></div>`;
+    }
+    function greeting() { const hour = new Date().getHours(); return hour < 12 ? "morning" : hour < 17 ? "afternoon" : "evening"; }
+    function renderInvoices(query = "") {
+      const search = query.toLowerCase();
+      const records = [...data.invoices].sort((a,b) => b.createdAt.localeCompare(a.createdAt)).filter(item => `${item.number} ${item.customer} ${item.email || ""}`.toLowerCase().includes(search));
+      content.innerHTML = `${pageHeading("Invoices", "Create, manage and share GST and non-GST bills.", `<button class="button primary" data-action="new-invoice">＋&nbsp; Create invoice</button>`)}
+        <div class="panel"><div class="toolbar"><div class="search"><input id="invoice-search" placeholder="Search invoice or customer..." value="${escapeHtml(query)}" aria-label="Search invoices"></div><div class="toolbar-actions"><button class="button" data-action="export-invoices">↓&nbsp; Export CSV</button></div></div>
+        ${records.length ? `<div class="table-wrap"><table><thead><tr><th>INVOICE NO.</th><th>CUSTOMER</th><th>DATE</th><th>TYPE</th><th>TOTAL</th><th>STATUS</th><th>ACTIONS</th></tr></thead><tbody>${records.map(item => `<tr><td><b>${escapeHtml(item.number)}</b></td><td><b>${escapeHtml(item.customer)}</b><br><span class="muted">${escapeHtml(item.email || item.phone || "")}</span></td><td>${dateText(item.date)}</td><td>${statusBadge(item.type === "GST" ? "GST" : "Non-GST")}</td><td><b>${money(item.total)}</b></td><td>${statusBadge(invoiceStatus(item))}</td><td><div class="row-actions"><button class="icon-btn" title="Edit invoice" data-action="edit-invoice" data-id="${item.id}">✎</button><button class="icon-btn" title="Preview / print" data-action="print-invoice" data-id="${item.id}">▣</button><button class="icon-btn" title="Share" data-action="share-invoice" data-id="${item.id}">↗</button><button class="icon-btn" title="Record payment" data-action="payment-invoice" data-id="${item.id}">₹</button><button class="icon-btn" title="Delete" data-action="delete-invoice" data-id="${item.id}">×</button></div></td></tr>`).join("")}</tbody></table></div>` : emptyState("▤", search ? "No matching invoices" : "No invoices created", search ? "Try another invoice number or customer name." : "Create a GST or non-GST invoice to get started.", search ? "" : `<button class="button small primary" data-action="new-invoice">Create invoice</button>`)}
+        </div>`;
+      const input = document.getElementById("invoice-search");
+      if (input) input.addEventListener("input", event => rerenderSearch(renderInvoices, "invoice-search", event));
+    }
+    function renderTransactions(query = "") {
+      const search = query.toLowerCase();
+      const records = [...data.transactions].sort((a,b) => b.date.localeCompare(a.date)).filter(item => `${item.party} ${item.category} ${item.note} ${item.type}`.toLowerCase().includes(search));
+      const income = data.transactions.filter(x => x.type === "Income").reduce((s,x) => s + Number(x.amount), 0);
+      const expense = data.transactions.filter(x => x.type === "Expense").reduce((s,x) => s + Number(x.amount), 0);
+      content.innerHTML = `${pageHeading("Transactions", "Track business income, expenses and invoice payments.", `<button class="button primary" data-action="new-transaction">＋&nbsp; Add transaction</button>`)}
+        <div class="metrics"><div class="metric"><div class="metric-label">Recorded income</div><div class="metric-value">${money(income)}</div><div class="metric-note">Manual transaction entries</div></div><div class="metric"><div class="metric-label">Recorded expenses</div><div class="metric-value">${money(expense)}</div><div class="metric-note">Manual transaction entries</div></div><div class="metric"><div class="metric-label">Net recorded</div><div class="metric-value">${money(income - expense)}</div><div class="metric-note">Income less expenses</div></div><div class="metric"><div class="metric-label">Entries</div><div class="metric-value">${data.transactions.length}</div><div class="metric-note">Transaction register</div></div></div>
+        <div class="panel"><div class="toolbar"><div class="search"><input id="transaction-search" placeholder="Search transactions..." value="${escapeHtml(query)}" aria-label="Search transactions"></div><div class="toolbar-actions"><button class="button" data-action="export-transactions">↓&nbsp; Export CSV</button></div></div>
+        ${records.length ? `<div class="table-wrap"><table><thead><tr><th>DATE</th><th>TYPE</th><th>PARTY / DESCRIPTION</th><th>CATEGORY</th><th>AMOUNT</th><th>ACTION</th></tr></thead><tbody>${records.map(item => `<tr><td>${dateText(item.date)}</td><td>${statusBadge(item.type)}</td><td><b>${escapeHtml(item.party)}</b><br><span class="muted">${escapeHtml(item.note || "")}</span></td><td>${escapeHtml(item.category)}</td><td><b>${item.type === "Expense" ? "− " : "+ "}${money(item.amount)}</b></td><td><button class="icon-btn" title="Delete transaction" data-action="delete-transaction" data-id="${item.id}">×</button></td></tr>`).join("")}</tbody></table></div>` : emptyState("↔", "No transactions recorded", "Record income or expenses to keep a business ledger.", `<button class="button small primary" data-action="new-transaction">Add transaction</button>`)}</div>`;
+      const input = document.getElementById("transaction-search");
+      if (input) input.addEventListener("input", event => rerenderSearch(renderTransactions, "transaction-search", event));
+    }
+    function renderMous(query = "") {
+      const search = query.toLowerCase();
+      const records = [...data.mous].sort((a,b) => b.startDate.localeCompare(a.startDate)).filter(item => `${item.title} ${item.party} ${item.status}`.toLowerCase().includes(search));
+      content.innerHTML = `${pageHeading("MOU & Contracts", "Keep school, partner and customer agreements in one register.", `<button class="button primary" data-action="new-mou">＋&nbsp; Add MOU</button>`)}
+        <div class="panel"><div class="toolbar"><div class="search"><input id="mou-search" placeholder="Search agreements..." value="${escapeHtml(query)}" aria-label="Search agreements"></div></div>
+        ${records.length ? `<div class="table-wrap"><table><thead><tr><th>AGREEMENT</th><th>PARTY</th><th>START DATE</th><th>END DATE</th><th>VALUE</th><th>STATUS</th><th>ACTION</th></tr></thead><tbody>${records.map(item => `<tr><td><b>${escapeHtml(item.title)}</b><br><span class="muted">${escapeHtml(item.notes || "")}</span></td><td>${escapeHtml(item.party)}</td><td>${dateText(item.startDate)}</td><td>${dateText(item.endDate)}</td><td>${item.value ? money(item.value) : "—"}</td><td>${statusBadge(item.status)}</td><td><div class="row-actions"><button class="icon-btn" title="Edit MOU" data-action="edit-mou" data-id="${item.id}">✎</button><button class="icon-btn" title="Delete MOU" data-action="delete-mou" data-id="${item.id}">×</button></div></td></tr>`).join("")}</tbody></table></div>` : emptyState("▧", "No agreements yet", "Add an MOU or contract to track its parties and dates.", `<button class="button small primary" data-action="new-mou">Add MOU</button>`)}</div>`;
+      const input = document.getElementById("mou-search");
+      if (input) input.addEventListener("input", event => rerenderSearch(renderMous, "mou-search", event));
+    }
+    function renderEmployees(query = "") {
+      const search = query.toLowerCase();
+      const records = [...data.employees].sort((a,b) => a.name.localeCompare(b.name)).filter(item => `${item.name} ${item.role} ${item.email} ${item.phone}`.toLowerCase().includes(search));
+      content.innerHTML = `${pageHeading("Employees", "Maintain a simple, private employee register.", `<button class="button primary" data-action="new-employee">＋&nbsp; Add employee</button>`)}
+        <div class="panel"><div class="toolbar"><div class="search"><input id="employee-search" placeholder="Search employees..." value="${escapeHtml(query)}" aria-label="Search employees"></div></div>
+        ${records.length ? `<div class="table-wrap"><table><thead><tr><th>EMPLOYEE</th><th>ROLE</th><th>CONTACT</th><th>JOINED</th><th>MONTHLY PAY</th><th>STATUS</th><th>ACTION</th></tr></thead><tbody>${records.map(item => `<tr><td><b>${escapeHtml(item.name)}</b></td><td>${escapeHtml(item.role)}</td><td>${escapeHtml(item.email || "—")}<br><span class="muted">${escapeHtml(item.phone || "")}</span></td><td>${dateText(item.joined)}</td><td>${item.salary ? money(item.salary) : "—"}</td><td>${statusBadge(item.status)}</td><td><div class="row-actions"><button class="icon-btn" title="Edit employee" data-action="edit-employee" data-id="${item.id}">✎</button><button class="icon-btn" title="Delete employee" data-action="delete-employee" data-id="${item.id}">×</button></div></td></tr>`).join("")}</tbody></table></div>` : emptyState("♙", "No employees added", "Add team members to start your employee register.", `<button class="button small primary" data-action="new-employee">Add employee</button>`)}</div>`;
+      const input = document.getElementById("employee-search");
+      if (input) input.addEventListener("input", event => rerenderSearch(renderEmployees, "employee-search", event));
+    }
+    function renderSchools(query = "") {
+      const search = query.toLowerCase();
+      const records = [...data.schools].sort((a,b) => a.name.localeCompare(b.name)).filter(item => `${item.name} ${item.address} ${item.agreementYear} ${item.status}`.toLowerCase().includes(search));
+      const running = data.schools.filter(item => item.status === "Running").length;
+      const monthly = data.schools.filter(item => item.status === "Running").reduce((sum, item) => sum + Number(item.monthlyFee || 0), 0);
+      const yearly = data.schools.filter(item => item.status === "Running").reduce((sum, item) => sum + Number(item.yearlyFee || 0), 0);
+      content.innerHTML = `${pageHeading("Schools", "A colorful overview of running school partners, fees, students and agreements.", `<button class="button primary" data-action="new-school">＋&nbsp; Add school</button>`)}
+        <div class="schools-banner"><div><h2>Running Schools</h2><p>School partnerships, program fees and agreement years</p></div><div class="school-count"><b>${running}</b><span>Running</span></div></div>
+        <div class="metrics"><div class="metric"><div class="metric-top"><span class="metric-label">Schools on record</span><span class="metric-icon">⌂</span></div><div class="metric-value">${data.schools.length}</div><div class="metric-note">All school partnerships</div></div>
+          <div class="metric"><div class="metric-top"><span class="metric-label">Monthly fees</span><span class="metric-icon" style="background:var(--teal-soft);color:var(--teal)">₹</span></div><div class="metric-value">${money(monthly)}</div><div class="metric-note">Running schools combined</div></div>
+          <div class="metric"><div class="metric-top"><span class="metric-label">Yearly fees</span><span class="metric-icon" style="background:var(--pink-soft);color:var(--pink)">↗</span></div><div class="metric-value">${money(yearly)}</div><div class="metric-note">Running schools combined</div></div></div>
+        <div class="panel"><div class="toolbar"><div class="search"><input id="school-search" placeholder="Search schools, address or agreement year..." value="${escapeHtml(query)}" aria-label="Search schools"></div><div class="toolbar-actions"><button class="button" data-action="export-schools">↓&nbsp; Export CSV</button></div></div>
+        ${records.length ? `<div class="table-wrap"><table class="school-register"><thead><tr><th>RUNNING SCHOOL NAME</th><th>STATUS</th><th>FEE</th><th>MONTHLY FEE</th><th>YEARLY FEE</th><th>ROBOTICS LAB</th><th>TOTAL STUDENTS</th><th>ADDRESS</th><th>YEAR OF AGREEMENT</th><th>ACTIONS</th></tr></thead><tbody>${records.map(item => `<tr><td><b>${escapeHtml(item.name)}</b></td><td>${statusBadge(item.status)}</td><td class="school-fee">${money(item.fee)}</td><td class="school-fee">${money(item.monthlyFee)}</td><td class="school-fee">${money(item.yearlyFee)}</td><td>${item.roboticsLab === "Yes" ? statusBadge("Active") : statusBadge("No")}</td><td>${Number(item.students || 0).toLocaleString("en-IN")}</td><td class="school-address">${escapeHtml(item.address || "—")}</td><td>${escapeHtml(item.agreementYear || "—")}</td><td><div class="row-actions"><button class="icon-btn" title="Edit school" data-action="edit-school" data-id="${item.id}">✎</button><button class="icon-btn" title="Delete school" data-action="delete-school" data-id="${item.id}">×</button></div></td></tr>`).join("")}</tbody></table></div>` : emptyState("⌂", search ? "No matching schools" : "No schools added yet", search ? "Try another school name or agreement year." : "Add your first running school and track its fees, students and MOU year.", search ? "" : `<button class="button small primary" data-action="new-school">＋ Add school</button>`)}</div>`;
+      const input = document.getElementById("school-search");
+      if (input) input.addEventListener("input", event => rerenderSearch(renderSchools, "school-search", event));
+    }
+    function rerenderSearch(renderList, inputId, event) {
+      const value = event.target.value;
+      const cursor = event.target.selectionStart;
+      renderList(value);
+      const replacement = document.getElementById(inputId);
+      replacement.focus();
+      replacement.setSelectionRange(cursor, cursor);
+    }
+    function renderSettings() {
+      const c = data.company;
+      content.innerHTML = `${pageHeading("Company settings", "These details appear on newly generated invoices.", `<button class="button primary" data-action="save-settings">Save changes</button>`)}
+        <div class="settings-grid"><div class="panel"><div class="panel-header"><h2>Business identity</h2></div><div class="form-grid">
+          ${settingField("Company name", "company-name", c.name, true)}${settingField("PAN", "company-pan", c.pan)}${settingField("GSTIN", "company-gstin", c.gstin)}${settingField("Business email", "company-email", c.email)}${settingField("Phone", "company-phone", c.phone)}${settingField("Registered address", "company-address", c.address, true)}
+        </div></div><div class="panel"><div class="panel-header"><h2>Payment details</h2></div><div class="form-grid">
+          ${settingField("Bank name", "company-bank", c.bank)}${settingField("Account number", "company-account", c.account)}${settingField("IFSC", "company-ifsc", c.ifsc)}${settingField("UPI ID", "company-upi", c.upi)}
+        </div>        <div class="note" style="margin-top:16px">Company details are stored in this browser only. Add your bank and contact details here before sharing final bills. Invoice PDFs are generated on this device and shared through your device's share sheet when supported. Sending without your confirmation requires a connected mail/WhatsApp service.</div></div></div>`;
+    }
+    function settingField(label, id, value, full = false) {
+      return `<div class="field ${full ? "full" : ""}"><label for="${id}">${label}</label><input id="${id}" value="${escapeHtml(value)}"></div>`;
+    }
+    function openModal(title, body, footer, wide = false) {
+      const modal = document.getElementById("modal");
+      delete modal.dataset.editId;
+      modal.className = `modal${wide ? " wide" : ""}`;
+      modal.innerHTML = `<div class="modal-header"><h2 id="modal-title">${title}</h2><button class="close" aria-label="Close" data-action="close-modal">×</button></div><div class="modal-body">${body}</div><div class="modal-footer">${footer}</div>`;
+      document.getElementById("modal-backdrop").classList.add("open");
+      const first = modal.querySelector("input,button,select");
+      if (first) first.focus();
+    }
+    function closeModal() { document.getElementById("modal-backdrop").classList.remove("open"); }
+    function nextInvoiceNumber() {
+      const year = new Date().getFullYear();
+      const prefix = `VST/${year}-${String((year + 1) % 100).padStart(2, "0")}/`;
+      const serials = data.invoices.map(x => Number(x.number.split("/").pop())).filter(Number.isFinite);
+      return `${prefix}${String(Math.max(0, ...serials) + 1).padStart(3, "0")}`;
+    }
+    function invoiceForm(existing = null) {
+      invoiceDraftType = existing ? existing.type : "GST";
+      const items = existing?.items || [{ description: "", hsn: "9983", qty: 1, rate: 0 }];
+      const footer = `<button class="button" data-action="close-modal">Cancel</button><button class="button" data-action="save-invoice" data-status="Draft">Save draft</button><button class="button primary" data-action="save-invoice" data-status="Issued">Save &amp; issue invoice</button>`;
+      openModal(existing ? "Edit invoice" : "Create invoice", `
+        <form id="invoice-form" onsubmit="return false">
+          <div class="form-grid">
+            <div class="field"><label for="invoice-customer">School / person name *</label><input id="invoice-customer" required value="${escapeHtml(existing?.customer || "")}" placeholder="Customer or school name"></div>
+            <div class="field"><label for="invoice-number">Invoice number</label><input id="invoice-number" value="${escapeHtml(existing?.number || nextInvoiceNumber())}" required></div>
+            <div class="field"><label for="invoice-date">Invoice date *</label><input id="invoice-date" type="date" value="${existing?.date || todayISO()}" required></div>
+            <div class="field"><label for="invoice-due">Due date</label><input id="invoice-due" type="date" value="${existing?.dueDate || ""}"></div>
+            <div class="field"><label for="invoice-email">Customer email</label><input id="invoice-email" type="email" value="${escapeHtml(existing?.email || "")}" placeholder="name@example.com"></div>
+            <div class="field"><label for="invoice-phone">WhatsApp number</label><input id="invoice-phone" type="tel" value="${escapeHtml(existing?.phone || "")}" placeholder="10 digit mobile number"></div>
+            <div class="field full"><label for="invoice-address">Billing address</label><input id="invoice-address" value="${escapeHtml(existing?.address || "")}" placeholder="Customer billing address"></div>
+            <div class="field"><label for="customer-gstin">Customer GSTIN (optional)</label><input id="customer-gstin" value="${escapeHtml(existing?.customerGstin || "")}" placeholder="Customer GST number"></div>
+            <div class="field"><label for="invoice-place">Place of supply / state</label><input id="invoice-place" value="${escapeHtml(existing?.place || "Uttar Pradesh")}" placeholder="State"></div>
+          </div>
+          <div class="section-title">Bill type <span class="muted">Choose whether GST is charged</span></div>
+          <div class="tax-toggle"><button type="button" class="${invoiceDraftType === "GST" ? "selected" : ""}" data-action="set-invoice-type" data-type="GST">GST invoice</button><button type="button" class="${invoiceDraftType === "Non-GST" ? "selected" : ""}" data-action="set-invoice-type" data-type="Non-GST">Non-GST bill</button></div>
+          <div id="gst-options" class="form-grid" style="margin-top:13px;${invoiceDraftType === "GST" ? "" : "display:none"}"><div class="field"><label for="invoice-tax">GST rate</label><select id="invoice-tax">${[0,5,12,18,28].map(rate => `<option value="${rate}" ${Number(existing?.taxRate ?? 18) === rate ? "selected" : ""}>${rate}%</option>`).join("")}</select></div><div class="field"><label>Tax split</label><div class="hint">Within Uttar Pradesh: CGST + SGST · Other state: IGST</div></div></div>
+          <div class="section-title">Items / services <button type="button" class="button small" data-action="add-invoice-line">＋ Add item</button></div>
+          <div class="line-items"><table><thead><tr><th>DESCRIPTION</th><th>HSN / SAC</th><th>QUANTITY</th><th>RATE (₹)</th><th>AMOUNT</th><th></th></tr></thead><tbody id="invoice-lines">${items.map((item, i) => lineItemHtml(item, i)).join("")}</tbody></table></div>
+          <div class="form-grid" style="margin-top:14px"><div class="field"><label for="invoice-discount">Discount (₹)</label><input id="invoice-discount" type="number" min="0" step="0.01" value="${Number(existing?.discount || 0)}"></div><div class="field"><label for="invoice-paid">Payment received (₹)</label><input id="invoice-paid" type="number" min="0" step="0.01" value="${Number(existing?.paid || 0)}"></div><div class="field full"><label for="invoice-notes">Notes / payment terms</label><input id="invoice-notes" value="${escapeHtml(existing?.notes || "Payment due within 7 days of invoice date.")}"></div></div>
+          <div class="totals" id="invoice-totals"></div>
+          <div class="note" style="margin-top:14px">Non-GST bills calculate no tax. Please verify customer GST details, state and the applicable tax treatment before issuing.</div>
+        </form>`, footer, true);
+      document.getElementById("invoice-lines").dataset.nextIndex = String(items.length);
+      updateInvoiceTotals();
+      if (existing) document.getElementById("modal").dataset.editId = existing.id;
+    }
+    function lineItemHtml(item, index) {
+      return `<tr data-line="${index}"><td><input class="desc-input line-desc" aria-label="Item description" placeholder="Service / item description" value="${escapeHtml(item.description)}"></td><td><input class="num-input line-hsn" aria-label="HSN or SAC" value="${escapeHtml(item.hsn || "")}" placeholder="9983"></td><td><input class="num-input line-qty" aria-label="Quantity" type="number" min="0.01" step="any" value="${Number(item.qty || 1)}"></td><td><input class="num-input line-rate" aria-label="Rate per quantity" type="number" min="0" step="0.01" value="${Number(item.rate || 0)}"></td><td class="line-total">₹0.00</td><td><button type="button" class="icon-btn" aria-label="Remove item" data-action="remove-invoice-line" data-line="${index}">×</button></td></tr>`;
+    }
+    function getInvoiceLines() {
+      return [...document.querySelectorAll("#invoice-lines tr")].map(row => ({
+        description: row.querySelector(".line-desc").value.trim(),
+        hsn: row.querySelector(".line-hsn").value.trim(),
+        qty: Number(row.querySelector(".line-qty").value || 0),
+        rate: Number(row.querySelector(".line-rate").value || 0)
+      }));
+    }
+    function invoiceAmounts() {
+      const subtotal = getInvoiceLines().reduce((sum, item) => sum + item.qty * item.rate, 0);
+      const discount = Math.max(0, Number(document.getElementById("invoice-discount")?.value || 0));
+      const taxable = Math.max(0, subtotal - discount);
+      const rate = invoiceDraftType === "GST" ? Number(document.getElementById("invoice-tax")?.value || 0) : 0;
+      const tax = taxable * rate / 100;
+      return { subtotal, discount, taxable, rate, tax, total: Math.round((taxable + tax) * 100) / 100 };
+    }
+    function updateInvoiceTotals() {
+      const rows = [...document.querySelectorAll("#invoice-lines tr")];
+      rows.forEach(row => {
+        const qty = Number(row.querySelector(".line-qty").value || 0);
+        const rate = Number(row.querySelector(".line-rate").value || 0);
+        row.querySelector(".line-total").textContent = money(qty * rate);
+      });
+      const target = document.getElementById("invoice-totals");
+      if (!target) return;
+      const amounts = invoiceAmounts();
+      const sameState = /uttar pradesh/i.test(document.getElementById("invoice-place")?.value || "");
+      const taxLines = amounts.tax ? (sameState ? `<div class="total-row"><span>CGST (${amounts.rate / 2}%)</span><b>${money(amounts.tax / 2)}</b></div><div class="total-row"><span>SGST (${amounts.rate / 2}%)</span><b>${money(amounts.tax / 2)}</b></div>` : `<div class="total-row"><span>IGST (${amounts.rate}%)</span><b>${money(amounts.tax)}</b></div>`) : "";
+      target.innerHTML = `<div class="total-row"><span>Subtotal</span><b>${money(amounts.subtotal)}</b></div>${amounts.discount ? `<div class="total-row"><span>Discount</span><b>− ${money(amounts.discount)}</b></div>` : ""}${invoiceDraftType === "GST" ? `<div class="total-row"><span>Taxable value</span><b>${money(amounts.taxable)}</b></div>` : ""}${taxLines}<div class="total-row grand"><span>Grand total</span><span>${money(amounts.total)}</span></div>`;
+    }
+    function getId() { return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`; }
+    function saveInvoice(status) {
+      const form = document.getElementById("invoice-form");
+      if (!form.reportValidity()) return;
+      const items = getInvoiceLines().filter(item => item.description && item.qty > 0);
+      if (!items.length) { notify("Add at least one item with a description and quantity."); return; }
+      const amount = invoiceAmounts();
+      const paid = Math.max(0, Number(document.getElementById("invoice-paid").value || 0));
+      if (paid > amount.total) { notify("Payment received cannot exceed the invoice total."); return; }
+      const editId = document.getElementById("modal").dataset.editId;
+      const existing = data.invoices.find(x => x.id === editId);
+      const record = {
+        id: existing?.id || getId(),
+        number: document.getElementById("invoice-number").value.trim(),
+        customer: document.getElementById("invoice-customer").value.trim(),
+        email: document.getElementById("invoice-email").value.trim(),
+        phone: document.getElementById("invoice-phone").value.trim(),
+        address: document.getElementById("invoice-address").value.trim(),
+        customerGstin: document.getElementById("customer-gstin").value.trim(),
+        place: document.getElementById("invoice-place").value.trim(),
+        date: document.getElementById("invoice-date").value,
+        dueDate: document.getElementById("invoice-due").value,
+        type: invoiceDraftType,
+        taxRate: invoiceDraftType === "GST" ? Number(document.getElementById("invoice-tax").value) : 0,
+        items, discount: amount.discount, subtotal: amount.subtotal, taxable: amount.taxable, tax: amount.tax,
+        total: amount.total, paid, notes: document.getElementById("invoice-notes").value.trim(), status,
+        createdAt: existing?.createdAt || new Date().toISOString()
+      };
+      if (data.invoices.some(item => item.number === record.number && item.id !== record.id)) { notify("That invoice number is already in use."); return; }
+      if (existing && paid < Number(existing.paid || 0)) { notify("Recorded payments cannot be reduced while editing an invoice."); return; }
+      if (paid > Number(existing?.paid || 0)) {
+        data.transactions.push({ id: getId(), type: "Income", amount: paid - Number(existing?.paid || 0), date: record.date, category: "Invoice payment", party: record.customer, note: record.number });
+      }
+      if (existing) data.invoices[data.invoices.indexOf(existing)] = record; else data.invoices.push(record);
+      if (!save()) return;
+      closeModal(); render(); notify(status === "Draft" ? "Draft saved." : "Invoice issued.");
+      if (!existing && status !== "Draft") {
+        const shareMode = record.email ? "email" : record.phone ? "whatsapp" : "";
+        if (shareMode) shareInvoice(record.id, shareMode);
+      }
+    }
+    function invoiceDocument(invoice) {
+      const c = data.company;
+      const documentEnd = "</" + "body></" + "html>";
+      const sameState = /uttar pradesh/i.test(invoice.place || "");
+      const rate = Number(invoice.taxRate || 0);
+      const tax = Number(invoice.tax || 0);
+      const taxHtml = tax ? (sameState ? `<tr><td>CGST @ ${rate / 2}%</td><td>${money(tax / 2)}</td></tr><tr><td>SGST @ ${rate / 2}%</td><td>${money(tax / 2)}</td></tr>` : `<tr><td>IGST @ ${rate}%</td><td>${money(tax)}</td></tr>`) : "";
+      const itemRows = invoice.items.map((item, i) => `<tr><td>${i + 1}</td><td>${escapeHtml(item.description)}</td><td>${escapeHtml(item.hsn || "—")}</td><td>${item.qty}</td><td>${money(item.rate)}</td><td>${money(item.qty * item.rate)}</td></tr>`).join("");
+      return `<!doctype html><html><head><meta charset="utf-8"><base href="${escapeHtml(location.href.replace(/[^/]*$/, ""))}"><title>${escapeHtml(invoice.number)}</title><style>
+        *{box-sizing:border-box}body{font:13px Arial,sans-serif;color:#261b39;margin:0;background:#f3f0f7}.sheet{max-width:850px;margin:25px auto;background:#fff;padding:35px 40px;min-height:1050px;border-top:7px solid #5423a5}.header{display:flex;align-items:center;gap:20px;border-bottom:2px solid #eee;padding-bottom:15px}.header img{width:115px;height:90px;object-fit:contain}.company h1{font-size:21px;margin:0 0 6px;color:#32106f}.company p{margin:4px 0;color:#554b63}.title{text-align:center;background:#32106f;color:#fff;padding:10px;font-size:18px;letter-spacing:2px;margin:18px 0}.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.box{border:1px solid #d9d4e0;padding:12px;min-height:125px}.box h3{margin:0 0 11px;color:#5423a5;font-size:13px}.box p{margin:7px 0}.items{width:100%;border-collapse:collapse;margin:22px 0}.items th{background:#5423a5;color:#fff;text-align:left}.items th,.items td{border:1px solid #ddd;padding:9px 7px;font-size:11px}.items td:nth-child(n+3),.items th:nth-child(n+3){text-align:right}.bottom{display:grid;grid-template-columns:1.2fr .8fr;gap:22px;border:1px solid #ddd;padding:13px}.totals{width:100%;border-collapse:collapse}.totals td{padding:6px;border-bottom:1px solid #eee}.totals td:last-child{text-align:right}.grand{background:#32106f;color:#fff;font-weight:bold;font-size:15px}.terms{line-height:1.65;margin-top:18px;font-size:11px}.sign{display:flex;justify-content:space-between;margin-top:45px}.sign div{width:40%;border-top:1px solid #888;text-align:center;padding-top:8px;margin-top:35px}.thanks{text-align:center;color:#5423a5;margin-top:28px;font-weight:bold}@media print{body{background:#fff}.sheet{margin:0;max-width:none;min-height:0;padding:25px;border:0}.no-print{display:none!important}}</style></head><body><div class="sheet">
+        <div class="header"><img src="company-logo.jpeg" onerror="this.style.display='none'" alt=""><div class="company"><h1>${escapeHtml(c.name)}</h1><p>${escapeHtml(c.address)}</p><p>Email: ${escapeHtml(c.email || "—")} &nbsp; Phone: ${escapeHtml(c.phone || "—")}</p><p><b>GSTIN: ${escapeHtml(c.gstin || "—")} &nbsp; | &nbsp; PAN: ${escapeHtml(c.pan || "—")}</b></p></div></div>
+        <div class="title">${invoice.type === "GST" ? "TAX INVOICE" : "INVOICE"}</div>
+        <div class="grid"><div class="box"><h3>BILL TO</h3><p><b>${escapeHtml(invoice.customer)}</b></p><p>${escapeHtml(invoice.address || "—")}</p><p>Phone: ${escapeHtml(invoice.phone || "—")}</p><p>GSTIN: ${escapeHtml(invoice.customerGstin || "—")}</p><p>Place of supply: ${escapeHtml(invoice.place || "—")}</p></div><div class="box"><h3>INVOICE DETAILS</h3><p><b>Invoice No.:</b> ${escapeHtml(invoice.number)}</p><p><b>Invoice Date:</b> ${dateText(invoice.date)}</p><p><b>Due Date:</b> ${dateText(invoice.dueDate)}</p><p><b>Bill type:</b> ${invoice.type === "GST" ? "GST invoice" : "Non-GST bill"}</p></div></div>
+        <table class="items"><thead><tr><th>#</th><th>Description of goods / services</th><th>HSN / SAC</th><th>Qty</th><th>Rate</th><th>Amount</th></tr></thead><tbody>${itemRows}</tbody></table><p><b>Amount in words:</b> ${escapeHtml(amountInWords(invoice.total))}</p>
+        <div class="bottom"><div><b>Notes / Terms</b><div class="terms">${escapeHtml(invoice.notes || "Payment due within 7 days of invoice date.")}<br><br>Subject to Lucknow jurisdiction.<br>This is a computer generated invoice.</div><div style="margin-top:15px"><b>Payment details</b><p>${escapeHtml(c.bank || "Bank details not provided")} &nbsp; ${c.account ? `A/c: ${escapeHtml(c.account)}` : ""}<br>${c.ifsc ? `IFSC: ${escapeHtml(c.ifsc)}` : ""} &nbsp; ${c.upi ? `UPI: ${escapeHtml(c.upi)}` : ""}</p></div></div><div><table class="totals"><tr><td>Sub total</td><td>${money(invoice.subtotal)}</td></tr>${invoice.discount ? `<tr><td>Discount</td><td>− ${money(invoice.discount)}</td></tr>` : ""}${invoice.type === "GST" ? `<tr><td>Taxable value</td><td>${money(invoice.taxable)}</td></tr>` : ""}${taxHtml}<tr class="grand"><td>GRAND TOTAL</td><td>${money(invoice.total)}</td></tr><tr><td>Paid</td><td>${money(invoice.paid)}</td></tr><tr><td>Balance</td><td>${money(invoiceBalance(invoice))}</td></tr></table></div></div>
+        <div class="sign"><div>Customer signature</div><div>Authorised signatory<br>${escapeHtml(c.name)}</div></div><div class="thanks">Thank you for your business!</div>
+        <button class="no-print" onclick="window.print()" style="position:fixed;right:20px;top:20px;padding:10px 15px;background:#5423a5;color:#fff;border:0;border-radius:6px">Print / Save PDF</button>
+        </div>${documentEnd}`;
+    }
+    function printInvoice(id) {
+      const invoice = data.invoices.find(item => item.id === id);
+      if (!invoice) return;
+      openModal(`Invoice preview · ${escapeHtml(invoice.number)}`, `<iframe class="invoice-preview-frame" title="Invoice preview" srcdoc="${escapeHtml(invoiceDocument(invoice))}"></iframe>`, `<button class="button" data-action="close-modal">Close</button><button class="button primary" data-action="print-preview">Print / Save PDF</button>`, true);
+    }
+    function createInvoicePdf(invoice) {
+      const pageWidth = 595;
+      const pageHeight = 842;
+      const margin = 40;
+      const purple = "0.196 0.063 0.435";
+      const ink = "0.16 0.13 0.22";
+      const muted = "0.40 0.37 0.45";
+      const line = "0.84 0.82 0.87";
+      const pdfSafe = value => String(value ?? "").normalize("NFKD").replace(/[^\x20-\x7E]/g, "?");
+      const escapePdf = value => pdfSafe(value).replace(/\\/g, "\\\\").replace(/\(/g, "\\(").replace(/\)/g, "\\)");
+      const pdfMoney = value => `Rs. ${Number(value || 0).toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      const wrapText = (value, maxChars) => {
+        const words = pdfSafe(value).split(/\s+/).filter(Boolean);
+        const lines = [];
+        let current = "";
+        for (const word of words) {
+          if (word.length > maxChars) {
+            if (current) { lines.push(current); current = ""; }
+            for (let offset = 0; offset < word.length; offset += maxChars) lines.push(word.slice(offset, offset + maxChars));
+          } else if (!current) current = word;
+          else if (`${current} ${word}`.length <= maxChars) current += ` ${word}`;
+          else { lines.push(current); current = word; }
+        }
+        if (current) lines.push(current);
+        return lines.length ? lines : [""];
+      };
+      const pages = [];
+      let commands;
+      let cursorY;
+      const text = (x, top, value, size = 9, color = ink, bold = false) => {
+        const baseline = pageHeight - top - size;
+        commands.push(`BT /${bold ? "F2" : "F1"} ${size} Tf ${color} rg 1 0 0 1 ${x} ${baseline} Tm (${escapePdf(value)}) Tj ET`);
+      };
+      const rect = (x, top, width, height, color) => {
+        commands.push(`q ${color} rg ${x} ${pageHeight - top - height} ${width} ${height} re f Q`);
+      };
+      const rule = (x1, top, x2, color = line) => {
+        const y = pageHeight - top;
+        commands.push(`q ${color} RG 0.6 w ${x1} ${y} m ${x2} ${y} l S Q`);
+      };
+      const drawTableHeader = top => {
+        rect(margin, top, pageWidth - margin * 2, 23, purple);
+        text(46, top + 6, "#", 8, "1 1 1", true);
+        text(67, top + 6, "Description", 8, "1 1 1", true);
+        text(298, top + 6, "HSN / SAC", 8, "1 1 1", true);
+        text(380, top + 6, "Qty", 8, "1 1 1", true);
+        text(423, top + 6, "Rate", 8, "1 1 1", true);
+        text(490, top + 6, "Amount", 8, "1 1 1", true);
+      };
+      const startPage = (first, withTable = true) => {
+        commands = [];
+        pages.push(commands);
+        rect(0, 0, pageWidth, 9, purple);
+        text(margin, 25, data.company.name, 16, purple, true);
+        let headerY = 49;
+        for (const lineText of wrapText(data.company.address || "", 80).slice(0, 2)) {
+          text(margin, headerY, lineText, 8, muted);
+          headerY += 12;
+        }
+        text(margin, headerY, `Email: ${data.company.email || "-"}  Phone: ${data.company.phone || "-"}`, 8, muted);
+        headerY += 12;
+        text(margin, headerY, `GSTIN: ${data.company.gstin || "-"}  PAN: ${data.company.pan || "-"}`, 8, muted);
+        rect(margin, 102, pageWidth - margin * 2, 31, purple);
+        text(margin + 12, 110, invoice.type === "GST" ? "TAX INVOICE" : "INVOICE", 13, "1 1 1", true);
+        text(360, 112, `Invoice No.: ${invoice.number}`, 9, "1 1 1", true);
+        if (first) {
+          rect(margin, 145, 250, 100, "0.97 0.96 0.98");
+          rect(305, 145, 250, 100, "0.97 0.96 0.98");
+          text(51, 153, "BILL TO", 8, purple, true);
+          let billY = 168;
+          for (const lineText of wrapText(invoice.customer, 43).slice(0, 2)) { text(51, billY, lineText, 10, ink, true); billY += 12; }
+          for (const lineText of wrapText(invoice.address || "-", 46).slice(0, 2)) { text(51, billY, lineText, 8, muted); billY += 11; }
+          text(51, 222, `Phone: ${invoice.phone || "-"}`, 8, muted);
+          text(51, 233, `GSTIN: ${invoice.customerGstin || "-"}`, 8, muted);
+          text(313, 153, "INVOICE DETAILS", 8, purple, true);
+          text(313, 171, `Date: ${dateText(invoice.date)}`, 9);
+          text(313, 188, `Due date: ${dateText(invoice.dueDate)}`, 9);
+          text(313, 205, `Type: ${invoice.type === "GST" ? "GST invoice" : "Non-GST bill"}`, 9);
+          text(313, 222, `Place of supply: ${invoice.place || "-"}`, 8, muted);
+          cursorY = 270;
+        } else {
+          text(margin, 151, `Invoice ${invoice.number}  |  ${invoice.customer}  |  Continued`, 9, muted, true);
+          cursorY = 183;
+        }
+        if (withTable) drawTableHeader(cursorY);
+        if (withTable) cursorY += 23;
+      };
+      startPage(true);
+      invoice.items.forEach((item, index) => {
+        const descriptionLines = wrapText(item.description, 38);
+        const rowHeight = Math.max(24, descriptionLines.length * 11 + 8);
+        if (cursorY + rowHeight > 735) startPage(false);
+        rule(margin, cursorY + rowHeight, pageWidth - margin);
+        text(46, cursorY + 7, String(index + 1), 8);
+        descriptionLines.forEach((lineText, lineIndex) => text(67, cursorY + 5 + lineIndex * 11, lineText, 8));
+        text(298, cursorY + 7, item.hsn || "-", 8);
+        text(380, cursorY + 7, String(item.qty), 8);
+        text(423, cursorY + 7, pdfMoney(item.rate), 8);
+        text(490, cursorY + 7, pdfMoney(item.qty * item.rate), 8);
+        cursorY += rowHeight;
+      });
+      if (cursorY > 575) {
+        startPage(false, false);
+      }
+      text(margin, cursorY + 18, `Amount in words: ${amountInWords(invoice.total)}`, 8, muted);
+      const totalsTop = cursorY + 38;
+      const totalsX = 345;
+      const totalsWidth = 210;
+      const totals = [
+        ["Subtotal", pdfMoney(invoice.subtotal)],
+        ...(invoice.discount ? [["Discount", `- ${pdfMoney(invoice.discount)}`]] : []),
+        ...(invoice.type === "GST" ? [["Taxable value", pdfMoney(invoice.taxable)]] : []),
+        ...(invoice.tax ? [[/uttar pradesh/i.test(invoice.place || "") ? `CGST (${Number(invoice.taxRate) / 2}%)` : `IGST (${invoice.taxRate}%)`, pdfMoney(/uttar pradesh/i.test(invoice.place || "") ? invoice.tax / 2 : invoice.tax)]] : []),
+        ...(invoice.tax && /uttar pradesh/i.test(invoice.place || "") ? [[`SGST (${Number(invoice.taxRate) / 2}%)`, pdfMoney(invoice.tax / 2)]] : []),
+        ["GRAND TOTAL", pdfMoney(invoice.total)],
+        ["Paid", pdfMoney(invoice.paid)],
+        ["Balance", pdfMoney(invoiceBalance(invoice))]
+      ];
+      totals.forEach(([label, value], index) => {
+        const rowTop = totalsTop + index * 18;
+        if (label === "GRAND TOTAL") rect(totalsX, rowTop - 3, totalsWidth, 21, purple);
+        text(totalsX + 7, rowTop, label, 8, label === "GRAND TOTAL" ? "1 1 1" : ink, label === "GRAND TOTAL");
+        text(totalsX + 115, rowTop, value, 8, label === "GRAND TOTAL" ? "1 1 1" : ink, true);
+        if (label !== "GRAND TOTAL") rule(totalsX, rowTop + 15, totalsX + totalsWidth);
+      });
+      const termsTop = totalsTop + 8;
+      text(margin, termsTop, "NOTES / TERMS", 8, purple, true);
+      wrapText(invoice.notes || "Payment due within 7 days of invoice date.", 47).slice(0, 6).forEach((lineText, index) => text(margin, termsTop + 15 + index * 12, lineText, 8, muted));
+      text(margin, termsTop + 94, `Bank: ${data.company.bank || "Not provided"}`, 8, muted);
+      text(margin, termsTop + 108, `A/c: ${data.company.account || "-"}  IFSC: ${data.company.ifsc || "-"}`, 8, muted);
+      text(margin, termsTop + 122, `UPI: ${data.company.upi || "-"}`, 8, muted);
+      text(margin, termsTop + 151, "This is a computer generated invoice.", 7, muted);
+      pages.forEach((page, index) => {
+        rule(margin, 800, pageWidth - margin);
+        text(margin, 808, "Thank you for your business!", 8, purple, true);
+        text(pageWidth - 95, 808, `Page ${index + 1}`, 8, muted);
+      });
+      const objects = [
+        "<< /Type /Catalog /Pages 2 0 R >>",
+        `<< /Type /Pages /Kids [${pages.map((_, index) => `${5 + index * 2} 0 R`).join(" ")}] /Count ${pages.length} >>`,
+        "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>",
+        "<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>"
+      ];
+      pages.forEach((page, index) => {
+        const stream = page.join("\n");
+        objects.push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageWidth} ${pageHeight}] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${6 + index * 2} 0 R >>`);
+        objects.push(`<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`);
+      });
+      let pdf = "%PDF-1.4\n";
+      const offsets = [0];
+      objects.forEach((object, index) => {
+        offsets.push(pdf.length);
+        pdf += `${index + 1} 0 obj\n${object}\nendobj\n`;
+      });
+      const xrefOffset = pdf.length;
+      pdf += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`;
+      offsets.slice(1).forEach(offset => { pdf += `${String(offset).padStart(10, "0")} 00000 n \n`; });
+      pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`;
+      return new Blob([pdf], { type: "application/pdf" });
+    }
+    function downloadInvoicePdf(file) {
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(file);
+      link.download = file.name;
+      link.click();
+      setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+    }
+    function openInvoiceShareFallback(invoice, mode, file) {
+      downloadInvoicePdf(file);
+      const message = `${invoice.type === "GST" ? "GST invoice" : "Invoice"} ${invoice.number} from ${data.company.name}\nCustomer: ${invoice.customer}\nDate: ${dateText(invoice.date)}\nTotal: ${money(invoice.total)}\nBalance due: ${money(invoiceBalance(invoice))}\n\nThe invoice PDF has been downloaded. Please attach it before sending.`;
+      if (mode === "whatsapp") {
+        let phone = invoice.phone.replace(/\D/g, "");
+        if (phone.length === 10) phone = `91${phone}`;
+        if (phone.length === 11 && phone.startsWith("0")) phone = `91${phone.slice(1)}`;
+        window.open(`https://wa.me/${phone}?text=${encodeURIComponent(message)}`, "_blank", "noopener");
+      } else {
+        const subject = `${invoice.type === "GST" ? "GST invoice" : "Invoice"} ${invoice.number} - ${data.company.name}`;
+        window.location.href = `mailto:${encodeURIComponent(invoice.email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`;
+      }
+      notify("PDF downloaded. Attach it to the opened message before sending.");
+    }
+    function shareInvoice(id, mode) {
+      const invoice = data.invoices.find(item => item.id === id);
+      if (!invoice) return;
+      const pdf = createInvoicePdf(invoice);
+      const file = new File([pdf], `Invoice-${invoice.number.replace(/[^a-z0-9-]/gi, "-")}.pdf`, { type: "application/pdf" });
+      const recipient = mode === "email" ? invoice.email : invoice.phone;
+      const shareText = `${invoice.type === "GST" ? "GST invoice" : "Invoice"} ${invoice.number} for ${invoice.customer}\nTo: ${recipient}\nTotal: ${money(invoice.total)}. Choose the recipient in your share app to send the attached PDF.`;
+      if (typeof navigator.share === "function" && typeof navigator.canShare === "function") {
+        try {
+          if (navigator.canShare({ files: [file] })) {
+            navigator.share({ files: [file], title: `Invoice ${invoice.number}`, text: shareText })
+              .then(() => notify("Invoice PDF shared."))
+              .catch(error => {
+                if (error.name === "AbortError") { notify("Sharing cancelled."); return; }
+                console.error("Could not share invoice PDF.", error);
+                openInvoiceShareFallback(invoice, mode, file);
+              });
+            return;
+          }
+        } catch (error) {
+          console.error("Could not prepare invoice PDF for sharing.", error);
+        }
+      }
+      openInvoiceShareFallback(invoice, mode, file);
+    }
+    function csvExport(filename, rows) {
+      const csv = rows.map(row => row.map(value => `"${String(value ?? "").replace(/"/g, '""')}"`).join(",")).join("\r\n");
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" }));
+      link.download = filename; link.click(); URL.revokeObjectURL(link.href);
+    }
+    function transactionForm() {
+      openModal("Record transaction", `<form id="transaction-form" onsubmit="return false"><div class="form-grid">
+        <div class="field"><label for="tx-type">Transaction type *</label><select id="tx-type"><option>Income</option><option>Expense</option></select></div>
+        <div class="field"><label for="tx-amount">Amount (₹) *</label><input id="tx-amount" type="number" min="0.01" step="0.01" required></div>
+        <div class="field"><label for="tx-date">Date *</label><input id="tx-date" type="date" value="${todayISO()}" required></div>
+        <div class="field"><label for="tx-category">Category *</label><select id="tx-category"><option>Sales</option><option>Invoice payment</option><option>Software</option><option>Travel</option><option>Office</option><option>Salary</option><option>Marketing</option><option>Other</option></select></div>
+        <div class="field"><label for="tx-party">Party / payee *</label><input id="tx-party" required placeholder="Customer or supplier"></div>
+        <div class="field"><label for="tx-note">Reference / note</label><input id="tx-note" placeholder="Optional details"></div>
+      </div></form>`, `<button class="button" data-action="close-modal">Cancel</button><button class="button primary" data-action="save-transaction">Save transaction</button>`);
+    }
+    function saveTransaction() {
+      const form = document.getElementById("transaction-form");
+      if (!form.reportValidity()) return;
+      data.transactions.push({ id: getId(), type: document.getElementById("tx-type").value, amount: Number(document.getElementById("tx-amount").value), date: document.getElementById("tx-date").value, category: document.getElementById("tx-category").value, party: document.getElementById("tx-party").value.trim(), note: document.getElementById("tx-note").value.trim() });
+      if (!save()) return;
+      closeModal(); render(); notify("Transaction recorded.");
+    }
+    function mouForm(existing = null) {
+      openModal(existing ? "Edit MOU / contract" : "Add MOU / contract", `<form id="mou-form" onsubmit="return false"><div class="form-grid">
+        <div class="field"><label for="mou-title">Agreement title *</label><input id="mou-title" required placeholder="e.g. School ERP implementation" value="${escapeHtml(existing?.title || "")}"></div>
+        <div class="field"><label for="mou-party">School / party *</label><input id="mou-party" required value="${escapeHtml(existing?.party || "")}"></div>
+        <div class="field"><label for="mou-start">Start date *</label><input id="mou-start" type="date" value="${existing?.startDate || todayISO()}" required></div>
+        <div class="field"><label for="mou-end">End date</label><input id="mou-end" type="date" value="${existing?.endDate || ""}"></div>
+        <div class="field"><label for="mou-value">Contract value (₹)</label><input id="mou-value" type="number" min="0" step="0.01" value="${Number(existing?.value || 0)}"></div>
+        <div class="field"><label for="mou-status">Status</label><select id="mou-status">${["Active", "Pending", "Completed"].map(status => `<option ${existing?.status === status ? "selected" : ""}>${status}</option>`).join("")}</select></div>
+        <div class="field full"><label for="mou-notes">Notes</label><textarea id="mou-notes">${escapeHtml(existing?.notes || "")}</textarea></div>
+      </div></form>`, `<button class="button" data-action="close-modal">Cancel</button><button class="button primary" data-action="save-mou">${existing ? "Update MOU" : "Save MOU"}</button>`);
+      if (existing) document.getElementById("modal").dataset.editId = existing.id;
+    }
+    function employeeForm(existing = null) {
+      openModal(existing ? "Edit employee" : "Add employee", `<form id="employee-form" onsubmit="return false"><div class="form-grid">
+        <div class="field"><label for="emp-name">Employee name *</label><input id="emp-name" required value="${escapeHtml(existing?.name || "")}"></div>
+        <div class="field"><label for="emp-role">Job title / role *</label><input id="emp-role" required placeholder="e.g. Software Developer" value="${escapeHtml(existing?.role || "")}"></div>
+        <div class="field"><label for="emp-email">Email</label><input id="emp-email" type="email" value="${escapeHtml(existing?.email || "")}"></div>
+        <div class="field"><label for="emp-phone">Phone</label><input id="emp-phone" type="tel" value="${escapeHtml(existing?.phone || "")}"></div>
+        <div class="field"><label for="emp-joined">Joining date</label><input id="emp-joined" type="date" value="${existing?.joined || todayISO()}"></div>
+        <div class="field"><label for="emp-salary">Monthly pay (₹)</label><input id="emp-salary" type="number" min="0" step="0.01" value="${Number(existing?.salary || 0)}"></div>
+        <div class="field"><label for="emp-status">Status</label><select id="emp-status">${["Active", "Inactive"].map(status => `<option ${existing?.status === status ? "selected" : ""}>${status}</option>`).join("")}</select></div>
+      </div><div class="note" style="margin-top:15px">Employee information is stored in this browser. Restrict access to this device because the register may contain personal data.</div></form>`, `<button class="button" data-action="close-modal">Cancel</button><button class="button primary" data-action="save-employee">${existing ? "Update employee" : "Save employee"}</button>`);
+      if (existing) document.getElementById("modal").dataset.editId = existing.id;
+    }
+    function schoolForm(existing = null) {
+      openModal(existing ? "Edit school" : "Add running school", `<form id="school-form" onsubmit="return false"><div class="form-grid">
+        <div class="field full"><label for="school-name">Running school name *</label><input id="school-name" required value="${escapeHtml(existing?.name || "")}" placeholder="Enter school name"></div>
+        <div class="field"><label for="school-status">School status *</label><select id="school-status">${["Running", "Not Running"].map(status => `<option ${existing?.status === status ? "selected" : ""}>${status}</option>`).join("")}</select></div>
+        <div class="field"><label for="school-lab">Robotics lab *</label><select id="school-lab">${["Yes", "No"].map(value => `<option ${existing?.roboticsLab === value ? "selected" : ""}>${value}</option>`).join("")}</select></div>
+        <div class="field"><label for="school-fee">Fee (₹)</label><input id="school-fee" type="number" min="0" step="0.01" value="${Number(existing?.fee || 0)}"></div>
+        <div class="field"><label for="school-monthly-fee">Monthly fee (₹)</label><input id="school-monthly-fee" type="number" min="0" step="0.01" value="${Number(existing?.monthlyFee || 0)}"></div>
+        <div class="field"><label for="school-yearly-fee">Yearly fee (₹)</label><input id="school-yearly-fee" type="number" min="0" step="0.01" value="${Number(existing?.yearlyFee || 0)}"></div>
+        <div class="field"><label for="school-students">Total number of students</label><input id="school-students" type="number" min="0" step="1" value="${Number(existing?.students || 0)}"></div>
+        <div class="field"><label for="school-agreement-year">Year of agreement</label><input id="school-agreement-year" value="${escapeHtml(existing?.agreementYear || "")}" placeholder="e.g. 2026-2027"></div>
+        <div class="field full"><label for="school-address">School address</label><textarea id="school-address" placeholder="Enter full school address">${escapeHtml(existing?.address || "")}</textarea></div>
+      </div></form>`, `<button class="button" data-action="close-modal">Cancel</button><button class="button primary" data-action="save-school">${existing ? "Update school" : "Save school"}</button>`, true);
+      if (existing) document.getElementById("modal").dataset.editId = existing.id;
+    }
+    function removeRecord(collection, id, label) {
+      const record = data[collection].find(item => item.id === id);
+      if (!record || !window.confirm(`Delete this ${label}? This cannot be undone.`)) return;
+      data[collection] = data[collection].filter(item => item.id !== id);
+      if (!save()) return;
+      render(); notify(`${label[0].toUpperCase() + label.slice(1)} deleted.`);
+    }
+    document.addEventListener("click", event => {
+      const pageButton = event.target.closest("[data-page]");
+      if (pageButton) { setPage(pageButton.dataset.page); return; }
+      const button = event.target.closest("[data-action]");
+      if (!button) return;
+      const { action, id } = button.dataset;
+      if (action === "close-modal") closeModal();
+      if (action === "new-invoice") invoiceForm();
+      if (action === "set-invoice-type") {
+        invoiceDraftType = button.dataset.type;
+        document.querySelectorAll(".tax-toggle button").forEach(item => item.classList.toggle("selected", item.dataset.type === invoiceDraftType));
+        document.getElementById("gst-options").style.display = invoiceDraftType === "GST" ? "grid" : "none";
+        updateInvoiceTotals();
+      }
+      if (action === "add-invoice-line") {
+        const tbody = document.getElementById("invoice-lines");
+        const index = Number(tbody.dataset.nextIndex || 0);
+        tbody.dataset.nextIndex = String(index + 1);
+        tbody.insertAdjacentHTML("beforeend", lineItemHtml({ description: "", hsn: "9983", qty: 1, rate: 0 }, index));
+        updateInvoiceTotals();
+      }
+      if (action === "remove-invoice-line") {
+        const rows = document.querySelectorAll("#invoice-lines tr");
+        if (rows.length <= 1) { notify("An invoice needs at least one item."); return; }
+        button.closest("tr").remove(); updateInvoiceTotals();
+      }
+      if (action === "save-invoice") saveInvoice(button.dataset.status);
+      if (action === "edit-invoice") {
+        const invoice = data.invoices.find(item => item.id === id);
+        if (invoice) invoiceForm(invoice);
+      }
+      if (action === "print-invoice") printInvoice(id);
+      if (action === "print-preview") {
+        const frame = document.querySelector(".invoice-preview-frame");
+        if (!frame?.contentWindow) { notify("Invoice preview is not ready yet."); return; }
+        frame.contentWindow.focus();
+        frame.contentWindow.print();
+      }
+      if (action === "share-invoice") {
+        const invoice = data.invoices.find(item => item.id === id);
+        if (!invoice) return;
+        openModal(`Share ${escapeHtml(invoice.number)}`, `<div class="note">The PDF is generated on this device. Supported devices open a share sheet where you choose the recipient and send the attachment. Otherwise, the PDF downloads and the selected app opens; attach the downloaded file before sending.</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px"><button class="button" data-action="share-email" data-id="${id}" ${invoice.email ? "" : "disabled"}>✉&nbsp; Share by email</button><button class="button" data-action="share-whatsapp" data-id="${id}" ${invoice.phone ? "" : "disabled"}>◉&nbsp; Share by WhatsApp</button></div>${!invoice.email || !invoice.phone ? `<p class="muted" style="font-size:11px;margin-top:12px">${!invoice.email ? "Add an email address" : ""}${!invoice.email && !invoice.phone ? " and " : ""}${!invoice.phone ? "add a WhatsApp number" : ""} to this invoice to enable the corresponding share option.</p>` : ""}`, `<button class="button" data-action="close-modal">Done</button>`);
+      }
+      if (action === "share-email") { const invoice = data.invoices.find(item => item.id === id); if (invoice?.email) shareInvoice(id, "email"); closeModal(); }
+      if (action === "share-whatsapp") { const invoice = data.invoices.find(item => item.id === id); if (invoice?.phone) shareInvoice(id, "whatsapp"); closeModal(); }
+      if (action === "payment-invoice") {
+        const invoice = data.invoices.find(item => item.id === id);
+        if (!invoice) return;
+        const due = invoiceBalance(invoice);
+        if (!due) { notify("This invoice is already paid."); return; }
+        const value = window.prompt(`Outstanding balance: ${money(due)}\nEnter payment received:`, String(due));
+        if (value === null) return;
+        const amount = Number(value);
+        if (!Number.isFinite(amount) || amount <= 0 || amount > due) { notify("Enter a valid payment not exceeding the outstanding balance."); return; }
+        invoice.paid = Number(invoice.paid || 0) + amount;
+        data.transactions.push({ id: getId(), type: "Income", amount, date: todayISO(), category: "Invoice payment", party: invoice.customer, note: invoice.number });
+        if (!save()) return;
+        render(); notify("Payment recorded and linked to transactions.");
+      }
+      if (action === "delete-invoice") removeRecord("invoices", id, "invoice");
+      if (action === "new-transaction") transactionForm();
+      if (action === "save-transaction") saveTransaction();
+      if (action === "delete-transaction") removeRecord("transactions", id, "transaction");
+      if (action === "new-mou") mouForm();
+      if (action === "edit-mou") {
+        const mou = data.mous.find(item => item.id === id);
+        if (mou) mouForm(mou);
+      }
+      if (action === "save-mou") {
+        const form = document.getElementById("mou-form"); if (!form.reportValidity()) return;
+        const editId = document.getElementById("modal").dataset.editId;
+        const existing = data.mous.find(item => item.id === editId);
+        const record = { id: existing?.id || getId(), title: document.getElementById("mou-title").value.trim(), party: document.getElementById("mou-party").value.trim(), startDate: document.getElementById("mou-start").value, endDate: document.getElementById("mou-end").value, value: Number(document.getElementById("mou-value").value || 0), status: document.getElementById("mou-status").value, notes: document.getElementById("mou-notes").value.trim() };
+        if (existing) data.mous[data.mous.indexOf(existing)] = record; else data.mous.push(record);
+        if (!save()) return;
+        closeModal(); render(); notify(existing ? "MOU updated." : "MOU added to the register.");
+      }
+      if (action === "delete-mou") removeRecord("mous", id, "MOU");
+      if (action === "new-school") schoolForm();
+      if (action === "edit-school") {
+        const school = data.schools.find(item => item.id === id);
+        if (school) schoolForm(school);
+      }
+      if (action === "save-school") {
+        const form = document.getElementById("school-form");
+        if (!form.reportValidity()) return;
+        const editId = document.getElementById("modal").dataset.editId;
+        const existing = data.schools.find(item => item.id === editId);
+        const name = document.getElementById("school-name").value.trim();
+        if (data.schools.some(item => item.id !== editId && item.name.toLowerCase() === name.toLowerCase())) {
+          notify("A school with this name is already in the register.");
+          return;
+        }
+        const record = {
+          id: existing?.id || getId(),
+          name,
+          status: document.getElementById("school-status").value,
+          roboticsLab: document.getElementById("school-lab").value,
+          fee: Number(document.getElementById("school-fee").value || 0),
+          monthlyFee: Number(document.getElementById("school-monthly-fee").value || 0),
+          yearlyFee: Number(document.getElementById("school-yearly-fee").value || 0),
+          students: Number(document.getElementById("school-students").value || 0),
+          address: document.getElementById("school-address").value.trim(),
+          agreementYear: document.getElementById("school-agreement-year").value.trim()
+        };
+        if (existing) data.schools[data.schools.indexOf(existing)] = record; else data.schools.push(record);
+        if (!save()) return;
+        closeModal(); render(); notify(existing ? "School details updated." : "School added to the register.");
+      }
+      if (action === "delete-school") removeRecord("schools", id, "school");
+      if (action === "new-employee") employeeForm();
+      if (action === "edit-employee") {
+        const employee = data.employees.find(item => item.id === id);
+        if (employee) employeeForm(employee);
+      }
+      if (action === "save-employee") {
+        const form = document.getElementById("employee-form"); if (!form.reportValidity()) return;
+        const editId = document.getElementById("modal").dataset.editId;
+        const existing = data.employees.find(item => item.id === editId);
+        const record = { id: existing?.id || getId(), name: document.getElementById("emp-name").value.trim(), role: document.getElementById("emp-role").value.trim(), email: document.getElementById("emp-email").value.trim(), phone: document.getElementById("emp-phone").value.trim(), joined: document.getElementById("emp-joined").value, salary: Number(document.getElementById("emp-salary").value || 0), status: document.getElementById("emp-status").value };
+        if (existing) data.employees[data.employees.indexOf(existing)] = record; else data.employees.push(record);
+        if (!save()) return;
+        closeModal(); render(); notify(existing ? "Employee updated." : "Employee added.");
+      }
+      if (action === "delete-employee") removeRecord("employees", id, "employee");
+      if (action === "save-settings") {
+        const keys = { name: "company-name", pan: "company-pan", gstin: "company-gstin", email: "company-email", phone: "company-phone", address: "company-address", bank: "company-bank", account: "company-account", ifsc: "company-ifsc", upi: "company-upi" };
+        Object.entries(keys).forEach(([key, field]) => data.company[key] = document.getElementById(field).value.trim());
+        if (!save()) return;
+        render(); notify("Company details saved.");
+      }
+      if (action === "export-invoices") {
+        csvExport("vst-invoices.csv", [["Invoice", "Customer", "Email", "Phone", "Date", "Due date", "Type", "Subtotal", "Tax", "Total", "Paid", "Balance", "Status"], ...data.invoices.map(x => [x.number, x.customer, x.email, x.phone, x.date, x.dueDate, x.type, x.subtotal, x.tax, x.total, x.paid, invoiceBalance(x), invoiceStatus(x)])]);
+      }
+      if (action === "export-transactions") csvExport("vst-transactions.csv", [["Date", "Type", "Party", "Category", "Amount", "Note"], ...data.transactions.map(x => [x.date, x.type, x.party, x.category, x.amount, x.note])]);
+      if (action === "export-schools") csvExport("vst-schools.csv", [["School name", "Status", "Fee", "Monthly fee", "Yearly fee", "Robotics lab", "Total students", "Address", "Year of agreement"], ...data.schools.map(x => [x.name, x.status, x.fee, x.monthlyFee, x.yearlyFee, x.roboticsLab, x.students, x.address, x.agreementYear])]);
+    });
+    document.addEventListener("input", event => {
+      if (event.target.closest("#invoice-form") && (event.target.matches(".line-qty,.line-rate,#invoice-discount,#invoice-place") || event.target.id === "invoice-paid")) updateInvoiceTotals();
+    });
+    document.addEventListener("change", event => {
+      if (event.target.id === "invoice-tax") updateInvoiceTotals();
+    });
+    document.getElementById("modal-backdrop").addEventListener("click", event => { if (event.target.id === "modal-backdrop") closeModal(); });
+    document.addEventListener("keydown", event => { if (event.key === "Escape") closeModal(); });
+    document.getElementById("today").textContent = new Date().toLocaleDateString("en-IN", { weekday: "short", day: "numeric", month: "short", year: "numeric" });
+    function speakLoginGreeting() {
+      const status = document.getElementById("login-status");
+      if (!("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)) {
+        status.textContent = "Voice greeting is unavailable in this browser. You can still sign in.";
+        return;
+      }
+      window.speechSynthesis.cancel();
+      const greeting = new SpeechSynthesisUtterance("Hello Boss. Confirm your password.");
+      greeting.lang = "en-IN";
+      greeting.rate = 0.92;
+      greeting.pitch = 1.08;
+      greeting.onerror = () => { status.textContent = "Could not play the greeting. Use Hear greeting to try again."; };
+      window.speechSynthesis.speak(greeting);
+      status.classList.remove("error");
+      status.textContent = "Hello, Boss! Confirm your password.";
+    }
+    document.getElementById("login-form").addEventListener("submit", event => {
+      event.preventDefault();
+      const loginId = document.getElementById("login-id").value.trim();
+      const passwordField = document.getElementById("login-password");
+      const status = document.getElementById("login-status");
+      if (loginId !== ERP_LOGIN_ID || passwordField.value !== ERP_LOGIN_PASSWORD) {
+        passwordField.value = "";
+        status.classList.add("error");
+        status.textContent = "That login ID or password is not correct. Please try again.";
+        passwordField.focus();
+        return;
+      }
+      window.speechSynthesis?.cancel();
+      document.getElementById("login-screen").hidden = true;
+      document.querySelector(".app").classList.remove("is-locked");
+      passwordField.value = "";
+      render();
+    });
+    document.getElementById("hear-greeting").addEventListener("click", speakLoginGreeting);
+    setTimeout(speakLoginGreeting, 500);
+    document.getElementById("login-id").focus();
+  </script>
+</body>
+</html>
